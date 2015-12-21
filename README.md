@@ -1,4 +1,25 @@
 mdl_auth_db
 ===========
 
-A Symfony project created on December 21, 2015, 10:14 am.
+Installing
+----------
+
+Create a new database (preferably postgres)
+
+```
+  git clone git://github.com/andrewnicols/mdl_auth_db.git
+  composer install
+```
+
+Creating data
+-------------
+```
+  ./bin/console appbundle:createtestdata [usercount] [coursecount] [maxuserspercourse]
+```
+
+Setting up in Moodle
+--------------------
+
+```
+  ./bin/console appbundle:moodleconfig
+```
