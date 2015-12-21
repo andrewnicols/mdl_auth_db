@@ -20,6 +20,15 @@ Creating data
 Setting up in Moodle
 --------------------
 
+Copy configuration generated from the following command to your config.php:
 ```
   ./bin/console appbundle:moodleconfig
+```
+
+Running Moodle User Syncs
+-------------------------
+
+```
+  php auth/db/cli/sync.php --verbose
+  php enrol/database/cli/sync.php --verbose
 ```
