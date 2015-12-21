@@ -35,6 +35,7 @@ class MoodleConfigCommand extends ContainerAwareCommand {
             'fielduser'     => 'username',
             'fieldpass'     => 'password',
             'passtype'      => 'plaintext',
+            'removeuser'    => 0,
         ];
 
         $fields = [
