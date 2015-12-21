@@ -1,0 +1,11 @@
+services:
+    appbundle.console.createtestdatacommand:
+        class: AppBundle\Console\Command\CreateTestDataCommand
+        arguments:
+            - "@doctrine"
+        tags:
+            - { name: console.command }
+    appbundle.console.moodleconfigcommand:
+        class: AppBundle\Console\Command\MoodleConfigCommand
+        tags:
+            - { name: console.command }
