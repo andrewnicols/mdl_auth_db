@@ -29,6 +29,6 @@ Running Moodle User Syncs
 -------------------------
 
 ```
-  php auth/db/cli/sync.php --verbose
+  php auth/db/cli/sync_users.php --verbose
   php enrol/database/cli/sync.php --verbose
 ```
