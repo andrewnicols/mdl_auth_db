@@ -61,6 +61,10 @@ class CreateTestDataCommand extends ContainerAwareCommand {
         $this->insertUsers($input, $output);
         $output->writeln('<info>done</info>');
 
+        $output->writeln('<info>Adding users to courses</info>');
+        $this->addUsersToCourses($input, $output);
+        $output->writeln('<info>done</info>');
+
         $em = $this->doctrine->getManager();
         $em->flush();
     }
@@ -74,11 +78,12 @@ class CreateTestDataCommand extends ContainerAwareCommand {
         $em = $this->doctrine->getManager();
         $courseCount = $startId + $input->getArgument('coursecount');
 
+        $faker = \Faker\Factory::create();
         for ($i = $startId; $i < $courseCount; $i++) {
             $course = new Course();
             $course
-                ->setName(sprintf('example%d', $i))
-                ->setDescription(sprintf('example%d', $i))
+                ->setName($faker->word)
+                ->setDescription($faker->paragraph(5))
             ;
 
             $em->persist($course);
@@ -93,37 +98,59 @@ class CreateTestDataCommand extends ContainerAwareCommand {
             $startId = 0;
         }
         $em = $this->doctrine->getManager();
-        $maxuserspercourse = $input->getArgument('maxuserspercourse');
         $usercount = $startId + $input->getArgument('usercount');
-
-        $courselist = $this->doctrine->getRepository('AppBundle:Course')->findAll();
+        $faker = \Faker\Factory::create();
 
         for ($i = $startId; $i < $usercount; $i++) {
             $person = new Person();
             $person
                 ->setUsername(sprintf('exampleuser%d', $i))
-                ->setFirstname(sprintf('exampleuser%d', $i))
-                ->setLastname(sprintf('exampleuser%d', $i))
+                ->setFirstname($faker->firstName)
+                ->setLastname($faker->lastName)
                 ->setPassword('password')
-                ->setEmail(sprintf('exampleuser%d@example.invalid', $i))
+                ->setEmail($faker->safeEmail)
             ;
 
-            $courseIds = array_rand($courselist, rand(1, $maxuserspercourse));
-            if (!is_array($courseIds)) {
-                $courseIds = [$courseIds];
-            }
-            foreach ($courseIds as $courseId) {
-                $course = $courselist[$courseId];
-                $person->addCourse($course);
-            }
-
             $output->writeln(sprintf(
-                '<info>Added user %s with %d enrolments</info>',
+                '<info>Added user %s (%s %s)</info>',
                 $person->getUsername(),
-                count($courseIds)
+                $person->getFirstname(),
+                $person->getLastname()
             ));
 
             $em->persist($person);
+            $em->flush();
+        }
+    }
+
+    protected function addUsersToCourses(InputInterface $input, OutputInterface $output) {
+        $em = $this->doctrine->getManager();
+
+        $maxuserspercourse = $input->getArgument('maxuserspercourse');
+
+        $courselist = $this->doctrine->getRepository('AppBundle:Course')->findAll();
+        foreach ($courselist as $course) {
+            if ($count = count($course->getUsers())) {
+                $output->writeln(sprintf(
+                        '<info>Skipping course %s because it already has %d enrolments</info>',
+                        $course->getName(),
+                        $count
+                    ));
+            }
+
+            $target = rand(1, $maxuserspercourse);
+            $count = 0;
+            $userlist = $this->doctrine->getRepository('AppBundle:Person')->findAll();
+            shuffle($userlist);
+            while ($count < $target && count($userlist)) {
+                $user = array_shift($userlist);
+                if ($course->hasUser($user)) {
+                    continue;
+                }
+                $course->addUser($user);
+            }
+
+            $em->persist($course);
             $em->flush();
         }
     }

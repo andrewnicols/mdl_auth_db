@@ -32,7 +32,7 @@ class Course
     /**
      * @var string
      *
-     * @ORM\Column(name="Description", type="string", length=255)
+     * @ORM\Column(name="Description", type="text")
      */
     private $description;
 
@@ -131,5 +131,22 @@ class Course
     public function getUsers()
     {
         return $this->users;
+    }
+
+    /**
+     * Does this course have the named user as a person yet?
+     *
+     * @param \AppBundle\Entity\Person $user
+     *
+     * @return Boolean
+     */
+    public function hasUser(\AppBundle\Entity\Person $user) {
+        foreach ($this->users as $u) {
+            if ($u->getId() === $user->getId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
