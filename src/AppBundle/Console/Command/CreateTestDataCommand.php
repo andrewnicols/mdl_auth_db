@@ -64,9 +64,6 @@ class CreateTestDataCommand extends ContainerAwareCommand {
         $output->writeln('<info>Adding users to courses</info>');
         $this->addUsersToCourses($input, $output);
         $output->writeln('<info>done</info>');
-
-        $em = $this->doctrine->getManager();
-        $em->flush();
     }
 
     protected function insertCourses(InputInterface $input, OutputInterface $output) {
