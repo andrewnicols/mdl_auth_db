@@ -1,6 +1,8 @@
 mdl_auth_db
 ===========
 
+A utility tool for generating copious amounts of test data for Moodle's auth_db and enrol_database plugins.
+
 Installing
 ----------
 
